@@ -73,14 +73,23 @@ table inet firewall {
 
 systemctl enable nftables
 systemctl start nftables
+sleep 1 # Waits 1 second
+nft -s list ruleset 
 
-apt install -y fail2ban
-sed -i 's/banaction = iptables-multiport/banaction = nftables-multiport/' /etc/fail2ban/jail.conf
-sed -i 's/banaction_allports = iptables-allports/banaction_allports = nftables-allports/' /etc/fail2ban/jail.conf
-service fail2ban restart
+wget  https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh
+chmod ugo+x  script.deb.sh
+./script.deb.sh
+apt install crowdsec
+apt install crowdsec-firewall-bouncer-nftables
+cscli console enroll clfi5oe8t0000kv08zw3qy99d
+systemctl restart crowdsec.service
+cscli collections list
+
+#apt install -y fail2ban
+#sed -i 's/banaction = iptables-multiport/banaction = nftables-multiport/' /etc/fail2ban/jail.conf
+#sed -i 's/banaction_allports = iptables-allports/banaction_allports = nftables-allports/' /etc/fail2ban/jail.conf
+#service fail2ban restart
 
 #Display result
-sleep 1 # Waits 1 second
 chronyc -N sources
-nft -s list ruleset 
-fail2ban-client status sshd
+#fail2ban-client status sshd
